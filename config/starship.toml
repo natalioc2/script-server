@@ -1,0 +1,15 @@
+format = "$hostname :: $directory $git_branch$git_status » "
+
+[hostname]
+ssh_only = false
+format = "[$hostname](bold blue)"
+
+[directory]
+style = "bold cyan"
+
+[git_branch]
+symbol = "‹"
+format = "[$symbol$branch›](yellow)"
+
+[git_status]
+format = "[*](yellow)"

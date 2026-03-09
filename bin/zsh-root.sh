@@ -1,60 +1,104 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 
-echo "[+] Iniciando configuración de Zsh en Debian..."
+B4='\033[38;5;39m'
+B5='\033[38;5;45m'
+NC='\033[0m'
 
-# Validar que no se ejecute como root directamente
-if [[ "${EUID}" -eq 0 ]]; then
-  echo "[!] No ejecutes este script como root."
-  echo "[!] Ejecútalo con tu usuario normal. El script usará sudo cuando sea necesario."
-  exit 1
+ZSH_DIR="$HOME/.zsh"
+ZSHRC="$HOME/.zshrc"
+BACKUP="$HOME/.zshrc.bak.$(date +%Y%m%d_%H%M%S)"
+
+echo ""
+printf "${B4} ::: Configuración ligera de Zsh + Starship :::${NC}\n"
+echo ""
+
+# Verificar dependencias
+for cmd in git zsh curl chsh; do
+    if ! command -v "$cmd" >/dev/null 2>&1; then
+        printf "Error: no se encontró el comando '%s'.\n" "$cmd"
+        exit 1
+    fi
+done
+
+# Crear directorio base
+mkdir -p "$ZSH_DIR"
+
+echo ""
+printf "${B4}[+] Instalando plugins ZSH...${NC}\n"
+echo ""
+
+if [ ! -d "$ZSH_DIR/zsh-autosuggestions/.git" ]; then
+    git clone https://github.com/zsh-users/zsh-autosuggestions "$ZSH_DIR/zsh-autosuggestions"
+else
+    printf "Aviso: zsh-autosuggestions ya existe.\n"
 fi
 
-echo "[+] Actualizando Linux Debian..."
-sudo apt update && sudo apt upgrade -y
+if [ ! -d "$ZSH_DIR/zsh-syntax-highlighting/.git" ]; then
+    git clone https://github.com/zsh-users/zsh-syntax-highlighting "$ZSH_DIR/zsh-syntax-highlighting"
+else
+    printf "Aviso: zsh-syntax-highlighting ya existe.\n"
+fi
 
-echo "[+] Instalando ZSH..."
-sudo apt install -y zsh git curl
+echo ""
+printf "${B4}[+] Configurando ~/.zshrc...${NC}\n"
 
-echo "[+] Instalando Oh My Zsh..."
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+if [ -f "$ZSHRC" ]; then
+    cp "$ZSHRC" "$BACKUP"
+fi
 
-echo "[+] Configurando ZSH-THEME..."
-sed -i 's/ZSH_THEME=".*"/ZSH_THEME="afowler"/' ~/.zshrc
+# eliminar bloque previo si existe
+if [ -f "$ZSHRC" ] && grep -q "# >>> zsh-minimal-config >>>" "$ZSHRC"; then
+    awk '
+        BEGIN {skip=0}
+        /# >>> zsh-minimal-config >>>/ {skip=1; next}
+        /# <<< zsh-minimal-config <<</ {skip=0; next}
+        skip==0 {print}
+    ' "$ZSHRC" > "${ZSHRC}.tmp"
+    mv "${ZSHRC}.tmp" "$ZSHRC"
+fi
 
-echo "[+] Instalando plugins ZSH..."
-git clone https://github.com/zsh-users/zsh-autosuggestions \
-~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+cat >> "$ZSHRC" <<'EOF'
 
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git \
-~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+# >>> zsh-minimal-config >>>
+# historial
+HISTSIZE=5000
+SAVEHIST=5000
+HISTFILE=~/.zsh_history
+setopt HIST_IGNORE_DUPS SHARE_HISTORY
 
-sed -i 's/plugins=(git)/plugins=(zsh-autosuggestions zsh-syntax-highlighting)/' ~/.zshrc
+# prompt simple (será reemplazado por starship)
+PROMPT='%F{39}%n@%m%f:%F{45}%~%f$ '
 
-echo "[+] Creando directorio de alias..."
-mkdir -p ~/.aliases
-
-echo "[+] Añadiendo carga de alias en ~/.zshrc..."
-if ! grep -q 'for file in ~/.aliases/\*.sh(N); do' ~/.zshrc 2>/dev/null; then
-  cat << 'EOF' >> ~/.zshrc
+# autocompletado
+autoload -Uz compinit
+compinit
 
 # Cargar alias personalizados
-for file in ~/.aliases/*.sh(N); do
+for file in ~/.local/myscripts/shell/*.sh(N); do
   source "$file"
 done
 
-# Ejecutar banner al iniciar terminal
-if [ -x /usr/local/bin/initial-banner.sh ]; then
-  /usr/local/bin/initial-banner.sh
-fi
+# plugins ligeros
+source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+# add path
+
+export PATH="$HOME/.local/myscripts/bin:$PATH"
+
+# <<< zsh-minimal-config <<<
 
 EOF
-else
-  echo "[=] El bloque de alias ya existe en ~/.zshrc"
-fi
 
-echo "[+] Cambiando shell por defecto a zsh..."
-chsh -s "$(command -v zsh)"
+printf "OK: configuración agregada a ~/.zshrc\n"
 
-echo "[✔] Instalación completada."
-echo "👉 Cierra sesión o reinicia para aplicar ZSH."
+echo ""
+echo "[+] Cambiando shell por defecto a ZSH..."
+chsh -s $(which zsh)
+
+echo ""
+printf "Instalación completada correctamente.\n"
+echo ""
+printf "${B5}Cierra sesión y vuelve a ingresar para aplicar los cambios.${NC}\n"
+echo ""

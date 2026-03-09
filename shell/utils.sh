@@ -8,7 +8,7 @@ alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
 alias .....='cd ../../../..'
-alias -='cd -'
+alias home='cd ~'
 
 # --- Listado ---
 alias ls='ls --color=auto'
@@ -33,4 +33,3 @@ alias mv='mv -i'
 # --- Sistema ---
 alias cls='printf "\033c"'
 alias reload='source ~/.zshrc'
-k

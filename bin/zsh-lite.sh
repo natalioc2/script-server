@@ -41,11 +41,13 @@ else
 fi
 
 echo ""
-printf "${B4}Instalando Starship...${NC}\n"
+printf "${B4}Instalando y configurando Starship...${NC}\n"
 
 if ! command -v starship >/dev/null 2>&1; then
     curl -sS https://starship.rs/install.sh | sh -s -- -y
 fi
+
+mkdir -p ~/.config && install -m 644 ~/.local/myscripts/config/starship.toml ~/.config/starship.toml
 
 echo ""
 printf "${B4}[+] Configurando ~/.zshrc...${NC}\n"
@@ -81,18 +83,21 @@ PROMPT='%F{39}%n@%m%f:%F{45}%~%f$ '
 autoload -Uz compinit
 compinit
 
+# Cargar alias personalizados
+for file in ~/.local/myscripts/shell/*.sh(N); do
+  source "$file"
+done
+
 # plugins ligeros
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
-# aliases útiles
-alias ll='ls -lah'
-alias gs='git status'
-alias v='nvim'
-alias update='sudo apt update && sudo apt upgrade'
-
 # starship prompt
 eval "$(starship init zsh)"
+
+# add path
+export PATH="$HOME/.local/myscripts/bin:$PATH"
+
 # <<< zsh-minimal-config <<<
 
 EOF
