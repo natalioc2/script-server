@@ -31,5 +31,5 @@ alias cp='cp -i'
 alias mv='mv -i'
 
 # --- Sistema ---
-alias cls='printf "\033c"'
+alias clr='printf "\033c"'
 alias reload='source ~/.zshrc'

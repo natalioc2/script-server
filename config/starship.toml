@@ -1,15 +1,73 @@
-format = "$hostname :: $directory $git_branch$git_status » "
+add_newline = false
 
+format = "$username$hostname::$directory($git_branch$git_status)($docker_context)($nodejs)($python)($golang)($rust)($terraform)($kubernetes)$character"
+
+# USUARIO
+[username]
+show_always = false
+style_user = "green"
+style_root = "bold red"
+format = "[$user]($style)"
+
+# HOST
 [hostname]
 ssh_only = false
-format = "[$hostname](bold blue)"
+style = "bold blue"
+format = "[$hostname]($style)"
 
+# DIRECTORIO
 [directory]
 style = "bold cyan"
+truncation_length = 3
+truncate_to_repo = true
 
+# GIT BRANCH
 [git_branch]
 symbol = "‹"
-format = "[$symbol$branch›](yellow)"
+style = "bold yellow"
+format = "[$symbol$branch›]($style)"
 
+# GIT STATUS
 [git_status]
-format = "[*](yellow)"
+style = "red"
+format = "[*]($style)"
+
+# DOCKER
+[docker_context]
+symbol = "🐳"
+format = "[$symbol$context](blue)"
+
+# NODE
+[nodejs]
+symbol = "⬢"
+format = "[$symbol$version](green)"
+
+# PYTHON
+[python]
+symbol = "🐍"
+format = "[$symbol$version](yellow)"
+
+# GOLANG
+[golang]
+symbol = ""
+format = "[$symbol$version](cyan)"
+
+# RUST
+[rust]
+symbol = "🦀"
+format = "[$symbol$version](red)"
+
+# TERRAFORM
+[terraform]
+symbol = "💠"
+format = "[$symbol$version](purple)"
+
+# KUBERNETES
+[kubernetes]
+symbol = "☸"
+format = "[$symbol$context](blue)"
+
+# PROMPT
+[character]
+success_symbol = "[»](bold green)"
+error_symbol = "[»](bold red)"
