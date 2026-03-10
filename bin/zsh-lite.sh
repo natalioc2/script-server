@@ -10,7 +10,7 @@ ZSHRC="$HOME/.zshrc"
 BACKUP="$HOME/.zshrc.bak.$(date +%Y%m%d_%H%M%S)"
 
 echo ""
-printf "${B4} ::: Configuración ligera de Zsh + Starship :::${NC}\n"
+printf "${B4} ::: Configuración ligera de Zsh :::${NC}\n"
 echo ""
 
 # Verificar dependencias
@@ -41,15 +41,6 @@ else
 fi
 
 echo ""
-printf "${B4}Instalando y configurando Starship...${NC}\n"
-
-if ! command -v starship >/dev/null 2>&1; then
-    curl -sS https://starship.rs/install.sh | sh -s -- -y
-fi
-
-mkdir -p ~/.config && install -m 644 ~/.local/myscripts/config/starship.toml ~/.config/starship.toml
-
-echo ""
 printf "${B4}[+] Configurando ~/.zshrc...${NC}\n"
 
 if [ -f "$ZSHRC" ]; then
@@ -74,14 +65,19 @@ cat >> "$ZSHRC" <<'EOF'
 HISTSIZE=5000
 SAVEHIST=5000
 HISTFILE=~/.zsh_history
-setopt HIST_IGNORE_DUPS SHARE_HISTORY
+setopt APPEND_HISTORY
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_SPACE
+setopt HIST_REDUCE_BLANKS
+setopt SHARE_HISTORY
+
 
 # prompt simple (será reemplazado por starship)
 PROMPT='%F{39}%n@%m%f:%F{45}%~%f$ '
 
 # autocompletado
 autoload -Uz compinit
-compinit
+compinit -C
 
 # Cargar alias personalizados
 for file in ~/.local/myscripts/shell/*.sh(N); do
@@ -92,10 +88,8 @@ done
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
-# starship prompt
-eval "$(starship init zsh)"
-
 # add path
+
 export PATH="$HOME/.local/myscripts/bin:$PATH"
 
 # <<< zsh-minimal-config <<<
