@@ -93,10 +93,6 @@ export PATH="$HOME/.local/myscripts/bin:$PATH"
 
 # prompts
 
-# load welcome 
-if [ -x ~/.local/myscripts/bin/welcome.sh ]; then
-  ~/.local/myscripts/bin/welcome.sh
-fi
 
 # <<< zsh-minimal-config <<<
 
