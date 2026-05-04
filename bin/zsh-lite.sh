@@ -80,7 +80,7 @@ autoload -Uz compinit
 compinit -C
 
 # Cargar alias personalizados
-for file in ~/.local/myscripts/shell/*.sh(N); do
+for file in ~/.local/.my-scripts/shell/*.sh(N); do
   source "$file"
 done
 
@@ -94,8 +94,8 @@ export PATH="$HOME/.local/myscripts/bin:$PATH"
 # prompts
 
 # load welcome 
-if [ -x ~/.local/myscripts/bin/welcome.sh ]; then
-  ~/.local/myscripts/bin/welcome.sh
+if [ -x ~/.local/.my-scripts/bin/welcome.sh ]; then
+  ~/.local/.my-scripts/bin/welcome.sh
 fi
 
 # <<< zsh-minimal-config <<<
