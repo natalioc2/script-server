@@ -9,6 +9,7 @@ alias ...='cd ../..'
 alias ....='cd ../../..'
 alias .....='cd ../../../..'
 alias home='cd ~'
+mkcd() { mkdir -p "$1" && cd "$1"; }
 
 # --- Listado ---
 alias ls='ls --color=auto'

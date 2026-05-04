@@ -21,6 +21,9 @@ fi
 printf "\n${B4}[+] Actualizando paquetes...${NC}\n"
 apt update && apt full-upgrade -y
 
+printf "\n${B4}[+] Instalando utilidades del sistema...${NC}\n"
+apt install -y lolcat figlet
+
 printf "\n${B4}[+] Instalando herramientas básicas del sistema...${NC}\n"
 apt install -y curl wget git tree
 
